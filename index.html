@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cumbre Digital MX 2026 — Registro</title>
+<style>
+  /* ===== Variables de diseño (tema oscuro, acento azul eléctrico) ===== */
+  :root {
+    --fondo: #0a0e17;
+    --tarjeta: #121826;
+    --borde: #222c42;
+    --texto: #e8edf7;
+    --texto-suave: #8d9ab5;
+    --acento: #2f6bff;
+    --acento-brillo: #5b8cff;
+    --error: #ff5c7a;
+    --exito: #38d9a9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    color: var(--texto);
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(47,107,255,.18), transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(47,107,255,.10), transparent 50%),
+      var(--fondo);
+  }
+
+  /* ===== Logo de texto ===== */
+  .logo {
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -.5px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .logo span { color: var(--acento-brillo); text-shadow: 0 0 24px rgba(47,107,255,.7); }
+  .subtitulo {
+    color: var(--texto-suave);
+    margin-bottom: 28px;
+    text-align: center;
+    font-size: .95rem;
+  }
+
+  /* ===== Tarjeta contenedora ===== */
+  .tarjeta {
+    width: 100%;
+    max-width: 480px;
+    background: var(--tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(47,107,255,.06);
+  }
+  .tarjeta h2 { font-size: 1.2rem; margin-bottom: 20px; }
+
+  /* ===== Campos del formulario ===== */
+  .campo { margin-bottom: 18px; }
+  label { display: block; font-size: .85rem; margin-bottom: 6px; color: var(--texto-suave); }
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    color: var(--texto);
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgba(47,107,255,.25);
+  }
+  .campo.invalido input, .campo.invalido select { border-color: var(--error); }
+  .mensaje-error { display: none; color: var(--error); font-size: .8rem; margin-top: 6px; }
+  .campo.invalido .mensaje-error { display: block; }
+
+  /* ===== Botones ===== */
+  button {
+    width: 100%;
+    padding: 13px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--acento);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .2s, transform .1s, box-shadow .2s;
+  }
+  button:hover { background: var(--acento-brillo); box-shadow: 0 0 22px rgba(47,107,255,.5); }
+  button:active { transform: scale(.98); }
+
+  /* ===== Pantalla de confirmación ===== */
+  #confirmacion { display: none; text-align: center; }
+  .icono-ok {
+    width: 64px; height: 64px; margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: var(--exito);
+    background: rgba(56,217,169,.12);
+    border: 2px solid var(--exito);
+  }
+  .numero-registro {
+    display: inline-block;
+    margin: 14px 0;
+    padding: 10px 22px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--acento-brillo);
+    background: rgba(47,107,255,.12);
+    border: 1px dashed var(--acento);
+    border-radius: 10px;
+  }
+  .bienvenida { color: var(--texto-suave); line-height: 1.6; margin-bottom: 24px; }
+  .bienvenida strong { color: var(--texto); }
+
+  @media (max-width: 480px) { .tarjeta { padding: 20px; } }
+</style>
+</head>
+<body>
+
+  <!-- Logo de texto -->
+  <div class="logo">Cumbre Digital <span>MX</span> 2026</div>
+  <p class="subtitulo">Transformación digital para PyMEs</p>
+
+  <div class="tarjeta">
+
+    <!-- Formulario de registro -->
+    <form id="formulario" novalidate>
+      <h2>Regístrate al evento</h2>
+
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ej. Ana López García" autocomplete="name">
+        <div class="mensaje-error">Ingresa tu nombre completo.</div>
+      </div>
+
+      <div class="campo">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" placeholder="tu@correo.com" autocomplete="email">
+        <div class="mensaje-error">Ingresa un correo electrónico válido (ej. nombre@dominio.com).</div>
+      </div>
+
+      <div class="campo">
+        <label for="empresa">Empresa u organización</label>
+        <input type="text" id="empresa" placeholder="Nombre de tu empresa" autocomplete="organization">
+        <div class="mensaje-error">Ingresa el nombre de tu empresa u organización.</div>
+      </div>
+
+      <div class="campo">
+        <label for="area">Área de interés</label>
+        <select id="area">
+          <option value="">Selecciona una opción…</option>
+          <option>Tecnología</option>
+          <option>Marketing</option>
+          <option>Negocios</option>
+          <option>Emprendimiento</option>
+        </select>
+        <div class="mensaje-error">Selecciona un área de interés.</div>
+      </div>
+
+      <button type="submit">Registrarme</button>
+    </form>
+
+    <!-- Pantalla de confirmación (oculta al inicio) -->
+    <div id="confirmacion">
+      <div class="icono-ok">✓</div>
+      <h2>¡Registro exitoso!</h2>
+      <div class="numero-registro" id="numeroRegistro">REG-0000</div>
+      <p class="bienvenida">
+        <strong id="nombreRegistrado"></strong>, te damos la bienvenida a
+        <strong>Cumbre Digital MX 2026</strong>. Estamos felices de contar contigo
+        en el encuentro sobre transformación digital para PyMEs.
+      </p>
+      <button type="button" id="btnOtro">Registrar a otra persona</button>
+    </div>
+
+  </div>
+
+<script>
+  // ===== Referencias a elementos del DOM =====
+  const formulario = document.getElementById('formulario');
+  const confirmacion = document.getElementById('confirmacion');
+  const ids = ['nombre', 'email', 'empresa', 'area'];
+
+  // Expresión regular sencilla para validar el formato del email
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  // Marca u oculta el error de un campo
+  function marcar(id, esValido) {
+    document.getElementById(id).closest('.campo').classList.toggle('invalido', !esValido);
+    return esValido;
+  }
+
+  // Valida todos los campos; devuelve true si todo es correcto
+  function validar() {
+    const v = id => document.getElementById(id).value.trim();
+    const resultados = [
+      marcar('nombre', v('nombre').length > 0),
+      marcar('email', regexEmail.test(v('email'))),
+      marcar('empresa', v('empresa').length > 0),
+      marcar('area', v('area') !== '')
+    ];
+    return resultados.every(Boolean);
+  }
+
+  // Genera un número de registro con formato REG-XXXX (4 dígitos aleatorios)
+  function generarNumero() {
+    return 'REG-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+  }
+
+  // Al enviar: validar y mostrar la confirmación
+  formulario.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validar()) return;
+
+    document.getElementById('numeroRegistro').textContent = generarNumero();
+    document.getElementById('nombreRegistrado').textContent =
+      document.getElementById('nombre').value.trim();
+
+    formulario.style.display = 'none';
+    confirmacion.style.display = 'block';
+  });
+
+  // Quita el error de un campo en cuanto el usuario lo corrige
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => el.closest('.campo').classList.remove('invalido'));
+    el.addEventListener('change', () => el.closest('.campo').classList.remove('invalido'));
+  });
+
+  // Botón "Registrar a otra persona": limpia el formulario y lo vuelve a mostrar
+  document.getElementById('btnOtro').addEventListener('click', function () {
+    formulario.reset();
+    ids.forEach(id => document.getElementById(id).closest('.campo').classList.remove('invalido'));
+    confirmacion.style.display = 'none';
+    formulario.style.display = 'block';
+    document.getElementById('nombre').focus();
+  });
+</script>
+</body>
+</html>
