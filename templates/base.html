@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block titulo %}Cumbre Digital MX 2026{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+  <!-- Logo de texto -->
+  <div class="logo">Cumbre Digital <span>MX</span> 2026</div>
+  <p class="subtitulo">Transformación digital para PyMEs</p>
+
+  {% block contenido %}{% endblock %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

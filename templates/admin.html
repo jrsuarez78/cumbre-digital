@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Administración — Cumbre Digital MX 2026{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta ancha">
+  <h2>Asistentes registrados</h2>
+
+  <div class="resumen">
+    <span class="chip">Total: <strong>{{ asistentes | length }}</strong></span>
+    {% for fila in por_area %}
+    <span class="chip">{{ fila.area_interes }}: <strong>{{ fila.total }}</strong></span>
+    {% endfor %}
+  </div>
+
+  {% if asistentes %}
+  <div class="tabla-contenedor">
+    <table>
+      <thead>
+        <tr><th>N.º</th><th>Nombre</th><th>Correo</th><th>Empresa</th><th>Área</th><th>Fecha</th></tr>
+      </thead>
+      <tbody>
+        {% for a in asistentes %}
+        <tr>
+          <td>{{ a.id | numero_registro }}</td>
+          <td>{{ a.nombre }}</td>
+          <td>{{ a.email }}</td>
+          <td>{{ a.empresa }}</td>
+          <td>{{ a.area_interes }}</td>
+          <td>{{ a.fecha_registro }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="vacio">Todavía no hay asistentes registrados.</p>
+  {% endif %}
+</div>
+{% endblock %}
