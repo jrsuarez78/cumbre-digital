@@ -1,0 +1,143 @@
+/* ===== Variables de diseño (tema oscuro, acento azul eléctrico) ===== */
+:root {
+  --fondo: #0a0e17;
+  --tarjeta: #121826;
+  --borde: #222c42;
+  --texto: #e8edf7;
+  --texto-suave: #8d9ab5;
+  --acento: #2f6bff;
+  --acento-brillo: #5b8cff;
+  --error: #ff5c7a;
+  --exito: #38d9a9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  color: var(--texto);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(47,107,255,.18), transparent 55%),
+    radial-gradient(ellipse at 90% 100%, rgba(47,107,255,.10), transparent 50%),
+    var(--fondo);
+}
+
+/* ===== Logo de texto ===== */
+.logo {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -.5px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.logo span { color: var(--acento-brillo); text-shadow: 0 0 24px rgba(47,107,255,.7); }
+.subtitulo {
+  color: var(--texto-suave);
+  margin-bottom: 28px;
+  text-align: center;
+  font-size: .95rem;
+}
+
+/* ===== Tarjeta contenedora ===== */
+.tarjeta {
+  width: 100%;
+  max-width: 480px;
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.45), 0 0 0 1px rgba(47,107,255,.06);
+}
+.tarjeta.ancha { max-width: 900px; }
+.tarjeta h2 { font-size: 1.2rem; margin-bottom: 20px; }
+
+/* ===== Campos del formulario ===== */
+.campo { margin-bottom: 18px; }
+label { display: block; font-size: .85rem; margin-bottom: 6px; color: var(--texto-suave); }
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: var(--texto);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus, select:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px rgba(47,107,255,.25);
+}
+.campo.invalido input, .campo.invalido select { border-color: var(--error); }
+.mensaje-error { display: none; color: var(--error); font-size: .8rem; margin-top: 6px; }
+.campo.invalido .mensaje-error { display: block; }
+
+/* ===== Botones (también enlaces con aspecto de botón) ===== */
+button, .boton {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #fff;
+  background: var(--acento);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .2s, transform .1s, box-shadow .2s;
+}
+button:hover, .boton:hover { background: var(--acento-brillo); box-shadow: 0 0 22px rgba(47,107,255,.5); }
+button:active, .boton:active { transform: scale(.98); }
+
+/* ===== Pantalla de confirmación ===== */
+.centrado { text-align: center; }
+.icono-ok {
+  width: 64px; height: 64px; margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--exito);
+  background: rgba(56,217,169,.12);
+  border: 2px solid var(--exito);
+}
+.icono-ok.error { color: var(--error); background: rgba(255,92,122,.12); border-color: var(--error); }
+.numero-registro {
+  display: inline-block;
+  margin: 14px 0;
+  padding: 10px 22px;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--acento-brillo);
+  background: rgba(47,107,255,.12);
+  border: 1px dashed var(--acento);
+  border-radius: 10px;
+}
+.bienvenida { color: var(--texto-suave); line-height: 1.6; margin-bottom: 24px; }
+.bienvenida strong { color: var(--texto); }
+
+/* ===== Panel de administración ===== */
+.resumen { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.chip {
+  padding: 8px 14px;
+  font-size: .85rem;
+  color: var(--texto-suave);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+}
+.chip strong { color: var(--acento-brillo); }
+.tabla-contenedor { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+th { color: var(--texto-suave); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .5px; }
+.vacio { color: var(--texto-suave); text-align: center; padding: 24px 0; }
+
+@media (max-width: 480px) { .tarjeta { padding: 20px; } }

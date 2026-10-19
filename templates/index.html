@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block titulo %}Cumbre Digital MX 2026 — Registro{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+  <!-- Formulario de registro -->
+  <form id="formulario" method="post" action="{{ url_for('registrar') }}" novalidate>
+    <h2>Regístrate al evento</h2>
+
+    <div class="campo{{ ' invalido' if errores.nombre }}">
+      <label for="nombre">Nombre completo</label>
+      <input type="text" id="nombre" name="nombre" placeholder="Ej. Ana López García"
+             autocomplete="name" value="{{ datos.nombre or '' }}">
+      <div class="mensaje-error">{{ errores.nombre or 'Ingresa tu nombre completo.' }}</div>
+    </div>
+
+    <div class="campo{{ ' invalido' if errores.email }}">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" name="email" placeholder="tu@correo.com"
+             autocomplete="email" value="{{ datos.email or '' }}">
+      <div class="mensaje-error" id="errorEmail">{{ errores.email or 'Ingresa un correo electrónico válido (ej. nombre@dominio.com).' }}</div>
+    </div>
+
+    <div class="campo{{ ' invalido' if errores.empresa }}">
+      <label for="empresa">Empresa u organización</label>
+      <input type="text" id="empresa" name="empresa" placeholder="Nombre de tu empresa"
+             autocomplete="organization" value="{{ datos.empresa or '' }}">
+      <div class="mensaje-error">{{ errores.empresa or 'Ingresa el nombre de tu empresa u organización.' }}</div>
+    </div>
+
+    <div class="campo{{ ' invalido' if errores.area }}">
+      <label for="area">Área de interés</label>
+      <select id="area" name="area">
+        <option value="">Selecciona una opción…</option>
+        {% for area in areas %}
+        <option value="{{ area }}"{{ ' selected' if datos.area == area }}>{{ area }}</option>
+        {% endfor %}
+      </select>
+      <div class="mensaje-error">{{ errores.area or 'Selecciona un área de interés.' }}</div>
+    </div>
+
+    <button type="submit">Registrarme</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Validación inmediata en el navegador (el servidor valida de nuevo al recibir los datos)
+  const formulario = document.getElementById('formulario');
+  const ids = ['nombre', 'email', 'empresa', 'area'];
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const mensajeEmailOriginal = document.getElementById('errorEmail').textContent;
+
+  function marcar(id, esValido) {
+    document.getElementById(id).closest('.campo').classList.toggle('invalido', !esValido);
+    return esValido;
+  }
+
+  function validar() {
+    const v = id => document.getElementById(id).value.trim();
+    // Restablece el mensaje genérico del email por si venía uno del servidor (correo duplicado)
+    document.getElementById('errorEmail').textContent =
+      'Ingresa un correo electrónico válido (ej. nombre@dominio.com).';
+    return [
+      marcar('nombre', v('nombre').length > 0),
+      marcar('email', regexEmail.test(v('email'))),
+      marcar('empresa', v('empresa').length > 0),
+      marcar('area', v('area') !== '')
+    ].every(Boolean);
+  }
+
+  // Si hay errores, no se envía al servidor
+  formulario.addEventListener('submit', function (e) {
+    if (!validar()) e.preventDefault();
+  });
+
+  // Quita el error de un campo en cuanto el usuario lo corrige
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    const limpiar = () => el.closest('.campo').classList.remove('invalido');
+    el.addEventListener('input', limpiar);
+    el.addEventListener('change', limpiar);
+  });
+</script>
+{% endblock %}
