@@ -9,7 +9,11 @@ from psycopg.rows import dict_row
 
 # En local lee el archivo .env; en Render usa la variable de entorno del panel
 load_dotenv()
-DATABASE_URL = os.environ.get("DATABASE_URL")
+# Se limpia el valor por si al pegarlo en Render quedó con espacios, saltos de línea,
+# comillas o el prefijo "DATABASE_URL=" copiado del archivo .env
+DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip().strip("\"'").strip()
+if DATABASE_URL.startswith("DATABASE_URL="):
+    DATABASE_URL = DATABASE_URL[len("DATABASE_URL="):].strip().strip("\"'").strip()
 if not DATABASE_URL:
     raise RuntimeError(
         "Falta la variable DATABASE_URL. Defínela en tu archivo .env (ver .env.example) "
