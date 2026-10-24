@@ -1,12 +1,20 @@
-"""Servidor Flask de Cumbre Digital MX 2026: registro de asistentes en SQLite."""
+"""Servidor Flask de Cumbre Digital MX 2026: registro de asistentes en PostgreSQL (Supabase)."""
 import os
 import re
-import sqlite3
 
+import psycopg
+from dotenv import load_dotenv
 from flask import Flask, g, redirect, render_template, request, url_for
+from psycopg.rows import dict_row
 
-# La base de datos vive en la raíz del proyecto
-RUTA_BD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evento.db")
+# En local lee el archivo .env; en Render usa la variable de entorno del panel
+load_dotenv()
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "Falta la variable DATABASE_URL. Defínela en tu archivo .env (ver .env.example) "
+        "o en las variables de entorno del servidor."
+    )
 
 AREAS = ["Tecnología", "Marketing", "Negocios", "Emprendimiento"]
 REGEX_EMAIL = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]{2,}$")
@@ -16,10 +24,9 @@ app = Flask(__name__)
 
 # ===== Base de datos =====
 def obtener_bd():
-    """Devuelve la conexión SQLite de la petición actual."""
+    """Devuelve la conexión PostgreSQL de la petición actual."""
     if "bd" not in g:
-        g.bd = sqlite3.connect(RUTA_BD)
-        g.bd.row_factory = sqlite3.Row
+        g.bd = psycopg.connect(DATABASE_URL, row_factory=dict_row)
     return g.bd
 
 
@@ -30,32 +37,11 @@ def cerrar_bd(_error):
         bd.close()
 
 
-def iniciar_bd():
-    """Crea la tabla de asistentes si todavía no existe."""
-    with sqlite3.connect(RUTA_BD) as bd:
-        bd.execute(
-            """
-            CREATE TABLE IF NOT EXISTS asistentes (
-                id             INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre         TEXT NOT NULL,
-                email          TEXT NOT NULL UNIQUE,
-                empresa        TEXT NOT NULL,
-                area_interes   TEXT NOT NULL CHECK (area_interes IN
-                               ('Tecnología','Marketing','Negocios','Emprendimiento')),
-                fecha_registro TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-            )
-            """
-        )
-
-
-iniciar_bd()
-
-
 # ===== Utilidades =====
-@app.template_filter("numero_registro")
-def numero_registro(id_asistente):
-    """Convierte el id en el formato REG-0001."""
-    return f"REG-{id_asistente:04d}"
+@app.template_filter("fecha")
+def formato_fecha(fecha):
+    """Muestra la fecha de registro como 23/10/2026 14:30."""
+    return fecha.strftime("%d/%m/%Y %H:%M") if fecha else ""
 
 
 def validar(datos):
@@ -89,15 +75,24 @@ def registrar():
     errores = validar(datos)
 
     if not errores:
+        bd = obtener_bd()
         try:
-            bd = obtener_bd()
-            cursor = bd.execute(
-                "INSERT INTO asistentes (nombre, email, empresa, area_interes) VALUES (?, ?, ?, ?)",
-                (datos["nombre"], datos["email"], datos["empresa"], datos["area"]),
+            # Se reserva el id primero para guardar también el número REG-0001
+            id_nuevo = bd.execute(
+                "SELECT nextval(pg_get_serial_sequence('asistentes', 'id')) AS id"
+            ).fetchone()["id"]
+            bd.execute(
+                "INSERT INTO asistentes (id, nombre, email, empresa, area_interes, numero_registro) "
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (id_nuevo, datos["nombre"], datos["email"], datos["empresa"], datos["area"],
+                 f"REG-{id_nuevo:04d}"),
             )
             bd.commit()
-            return redirect(url_for("confirmacion", id_asistente=cursor.lastrowid))
-        except sqlite3.IntegrityError:
+            return redirect(url_for("confirmacion", id_asistente=id_nuevo))
+        except psycopg.errors.UniqueViolation as e:
+            bd.rollback()
+            if e.diag.constraint_name != "asistentes_email_key":
+                raise
             errores["email"] = "Este correo ya está registrado en el evento."
 
     return render_template("index.html", areas=AREAS, datos=datos, errores=errores), 400
@@ -106,7 +101,7 @@ def registrar():
 @app.get("/confirmacion/<int:id_asistente>")
 def confirmacion(id_asistente):
     asistente = obtener_bd().execute(
-        "SELECT id, nombre FROM asistentes WHERE id = ?", (id_asistente,)
+        "SELECT id, nombre, numero_registro FROM asistentes WHERE id = %s", (id_asistente,)
     ).fetchone()
     if asistente is None:
         return pagina_error(404, "No encontramos ese registro."), 404

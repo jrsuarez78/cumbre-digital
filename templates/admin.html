@@ -21,12 +21,12 @@
       <tbody>
         {% for a in asistentes %}
         <tr>
-          <td>{{ a.id | numero_registro }}</td>
+          <td>{{ a.numero_registro }}</td>
           <td>{{ a.nombre }}</td>
           <td>{{ a.email }}</td>
           <td>{{ a.empresa }}</td>
           <td>{{ a.area_interes }}</td>
-          <td>{{ a.fecha_registro }}</td>
+          <td>{{ a.fecha_registro | fecha }}</td>
         </tr>
         {% endfor %}
       </tbody>
